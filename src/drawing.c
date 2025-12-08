@@ -87,7 +87,7 @@ void tfb_draw_hline(int x, int y, int len, u32 color)
       return;
 
    len = MIN(len, MAX(0, (int)__fb_win_end_x - x));
-   memset_var(__fb_buffer + y * __fb_pitch + (x << 2), color, len, __fb_depth);
+   memset_var(__fb_buffer + y * __fb_pitch + (x << (__fb_depth >> 4)), color, len, __fb_depth);
 }
 
 void tfb_draw_vline(int x, int y, int len, u32 color)
@@ -123,8 +123,6 @@ void tfb_draw_vline(int x, int y, int len, u32 color)
       for (; y < yend; y++, buf += __fb_pitch_div4)
          *buf = color;
    }
-
-   
 }
 
 void tfb_fill_rect(int x, int y, int w, int h, u32 color)
@@ -161,7 +159,7 @@ void tfb_fill_rect(int x, int y, int w, int h, u32 color)
    w = MIN(w, MAX(0, (int)__fb_win_end_x - x));
    yend = MIN(y + h, __fb_win_end_y);
 
-   dest = __fb_buffer + y * __fb_pitch + (x << 2);
+   dest = __fb_buffer + y * __fb_pitch + (x << (__fb_depth >> 4));
 
    for (u32 cy = y; cy < yend; cy++, dest += __fb_pitch)
       memset_var(dest, color, w, __fb_depth);
