@@ -35,16 +35,19 @@ extern int __fb_depth;
 
 inline u32 tfb_make_color(u8 r, u8 g, u8 b)
 {
-   return ((r << __fb_r_pos) & __fb_r_mask) |
-          ((g << __fb_g_pos) & __fb_g_mask) |
-          ((b << __fb_b_pos) & __fb_b_mask);
-}
-
-inline u16 tfb_clip_32_to_16(u32 col)
-{
-   return ((0x0000ff & col) >> 3) |
-          ((0x00ff00 & col) >> 13)|
-          ((0xff0000 & col) >> 23);
+   if(__fb_depth == 32)
+   {
+      return ((r << __fb_r_pos) & __fb_r_mask) |
+             ((g << __fb_g_pos) & __fb_g_mask) |
+             ((b << __fb_b_pos) & __fb_b_mask);
+   }
+   else
+   {
+      return 0xffff &
+             (((r << __fb_r_pos) & __fb_r_mask) |
+              ((g << __fb_g_pos) & __fb_g_mask) |
+              ((b << __fb_b_pos) & __fb_b_mask));
+   }
 }
 
 inline void tfb_draw_pixel(int x, int y, u32 color)
@@ -56,7 +59,10 @@ inline void tfb_draw_pixel(int x, int y, u32 color)
    {
       case 16:
          if ((u32)x < (u32)__fb_win_end_x && (u32)y < (u32)__fb_win_end_y)
-            ((volatile u16 *)__fb_buffer)[x + y * __fb_pitch_div2] = (u16)color;
+            ((volatile u16 *)__fb_buffer)[x + y * __fb_pitch_div2] =
+                  ((0x0000ff & color) >> 3) |
+                  ((0x00ff00 & color) >> 13)|
+                  ((0xff0000 & color) >> 23);
          break;
       case 32:
          if ((u32)x < (u32)__fb_win_end_x && (u32)y < (u32)__fb_win_end_y)
