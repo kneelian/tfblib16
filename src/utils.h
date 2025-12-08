@@ -54,3 +54,21 @@ static inline void *memset16(void *s, u16 val, size_t n)
 
    return s;
 }
+
+/*
+ * Choose between memset types based on depth
+ */
+static inline void *memset_var(void *s, u32 val, size_t n, int depth)
+{
+   switch(depth)
+   {
+      case 16:
+         return memset16(s, val, n);
+         break;
+      case 32:
+         return memset32(s, val, n);
+         break;
+      default:
+         return (void*)0;
+   }
+}
