@@ -81,12 +81,12 @@ int tfb_acquire_fb(u32 flags, const char *fb_device, const char *tty_device)
    __fb_pitch_div4 = __fb_pitch >> 2;
 
    if (__fbi.bits_per_pixel != 32) {
-      ret = TFB_ERR_UNSUPPORTED_VIDEO_MODE;
+      ret = TFB_ERR_UNSUPPORTED_VIDEO_MODE_DEPTH;
       goto out;
    }
 
    if (__fbi.red.msb_right || __fbi.green.msb_right || __fbi.blue.msb_right) {
-      ret = TFB_ERR_UNSUPPORTED_VIDEO_MODE;
+      ret = TFB_ERR_UNSUPPORTED_VIDEO_MODE_MSB;
       goto out;
    }
 
