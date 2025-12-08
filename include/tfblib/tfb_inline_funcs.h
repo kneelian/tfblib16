@@ -30,6 +30,7 @@ extern u8 __fb_b_mask_size;
 extern u8 __fb_r_pos;
 extern u8 __fb_g_pos;
 extern u8 __fb_b_pos;
+extern int __fb_depth;
 
 inline u32 tfb_make_color(u8 r, u8 g, u8 b)
 {
@@ -38,13 +39,29 @@ inline u32 tfb_make_color(u8 r, u8 g, u8 b)
           ((b << __fb_b_pos) & __fb_b_mask);
 }
 
+inline u16 tfb_clip_32_to_16(u32 col)
+{
+   return ((0x0000ff & col) >> 3) |
+          ((0x00ff00 & col) >> 13)|
+          ((0xff0000 & col) >> 23);
+}
+
 inline void tfb_draw_pixel(int x, int y, u32 color)
 {
    x += __fb_off_x;
    y += __fb_off_y;
 
-   if ((u32)x < (u32)__fb_win_end_x && (u32)y < (u32)__fb_win_end_y)
-      ((volatile u32 *)__fb_buffer)[x + y * __fb_pitch_div4] = color;
+   switch (__fb_depth)
+   {
+      case 16:
+         break;
+      case 32:
+         if ((u32)x < (u32)__fb_win_end_x && (u32)y < (u32)__fb_win_end_y)
+         ((volatile u32 *)__fb_buffer)[x + y * __fb_pitch_div4] = color;
+         break;
+      default:
+         break;
+   }
 }
 
 inline u32 tfb_screen_width(void) { return __fb_screen_w; }

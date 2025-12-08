@@ -27,6 +27,8 @@ int __tfb_ttyfd = -1;
 
 static int fbfd = -1;
 
+int __fb_depth = 0;
+
 static void tfb_init_colors(void);
 
 int tfb_set_window(u32 x, u32 y, u32 w, u32 h)
@@ -80,10 +82,12 @@ int tfb_acquire_fb(u32 flags, const char *fb_device, const char *tty_device)
    __fb_size = __fb_pitch * __fbi.yres;
    __fb_pitch_div4 = __fb_pitch >> 2;
 
-   if (__fbi.bits_per_pixel != 32) {
+   if ((__fbi.bits_per_pixel != 32)/* && (__fbi.bits_per_pixel != 16)*/) {
       ret = TFB_ERR_UNSUPPORTED_VIDEO_MODE_DEPTH;
       goto out;
    }
+
+   __fb_depth = __fbi.bits_per_pixel;
 
    if (__fbi.red.msb_right || __fbi.green.msb_right || __fbi.blue.msb_right) {
       ret = TFB_ERR_UNSUPPORTED_VIDEO_MODE_MSB;
