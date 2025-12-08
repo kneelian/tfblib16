@@ -35,16 +35,13 @@ extern int __fb_depth;
 
 inline u32 tfb_make_color(u8 r, u8 g, u8 b)
 {
+   r = r >> (8 - __fb_r_mask_size);
+   g = g >> (8 - __fb_g_mask_size);
+   b = b >> (8 - __fb_b_mask_size);
+
    return ((r << __fb_r_pos) & __fb_r_mask) |
           ((g << __fb_g_pos) & __fb_g_mask) |
           ((b << __fb_b_pos) & __fb_b_mask);
-}
-
-inline u16 tfb_clip_32_to_16(u32 col)
-{
-   return ((0x0000ff & col) >> 3) |
-          ((0x00ff00 & col) >> 13)|
-          ((0xff0000 & col) >> 23);
 }
 
 inline void tfb_draw_pixel(int x, int y, u32 color)
