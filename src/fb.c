@@ -83,7 +83,7 @@ int tfb_acquire_fb(u32 flags, const char *fb_device, const char *tty_device)
    __fb_pitch_div2 = __fb_pitch >> 1;
    __fb_pitch_div4 = __fb_pitch >> 2;
 
-   if ((__fbi.bits_per_pixel != 32)/* && (__fbi.bits_per_pixel != 16)*/) {
+   if ((__fbi.bits_per_pixel != 32) && (__fbi.bits_per_pixel != 16)) {
       ret = TFB_ERR_UNSUPPORTED_VIDEO_MODE_DEPTH;
       goto out;
    }
