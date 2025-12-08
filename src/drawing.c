@@ -21,6 +21,7 @@ void *__fb_buffer;
 void *__fb_real_buffer;
 size_t __fb_size;
 size_t __fb_pitch;
+size_t __fb_pitch_div2;
 size_t __fb_pitch_div4; /*
                          * Used in tfb_draw_pixel* to save a (x << 2) operation.
                          * If we had to use __fb_pitch, we'd had to write:
@@ -59,7 +60,7 @@ int tfb_set_center_window_size(u32 w, u32 h)
 void tfb_clear_screen(u32 color)
 {
    if (__fb_pitch == (u32) 4 * __fb_screen_w) {
-      memset32(__fb_buffer, color, __fb_size >> 2);
+      memset_var(__fb_buffer, color, __fb_size >> 2, __fb_depth);
       return;
    }
 
@@ -86,7 +87,7 @@ void tfb_draw_hline(int x, int y, int len, u32 color)
       return;
 
    len = MIN(len, MAX(0, (int)__fb_win_end_x - x));
-   memset32(__fb_buffer + y * __fb_pitch + (x << 2), color, len);
+   memset_var(__fb_buffer + y * __fb_pitch + (x << 2), color, len, __fb_depth);
 }
 
 void tfb_draw_vline(int x, int y, int len, u32 color)
@@ -106,11 +107,24 @@ void tfb_draw_vline(int x, int y, int len, u32 color)
 
    yend = MIN(y + len, __fb_win_end_y);
 
-   volatile u32 *buf =
-      ((volatile u32 *) __fb_buffer) + y * __fb_pitch_div4 + x;
+   if(__fb_depth == 16)
+   {
+      volatile u16 *buf =
+         ((volatile u16 *) __fb_buffer) + y * __fb_pitch_div2 + x;
 
-   for (; y < yend; y++, buf += __fb_pitch_div4)
-      *buf = color;
+      for (; y < yend; y++, buf += __fb_pitch_div2)
+         *buf = (u16)color;
+   }
+   else
+   {
+      volatile u32 *buf =
+         ((volatile u32 *) __fb_buffer) + y * __fb_pitch_div4 + x;
+
+      for (; y < yend; y++, buf += __fb_pitch_div4)
+         *buf = color;
+   }
+
+   
 }
 
 void tfb_fill_rect(int x, int y, int w, int h, u32 color)
@@ -150,7 +164,7 @@ void tfb_fill_rect(int x, int y, int w, int h, u32 color)
    dest = __fb_buffer + y * __fb_pitch + (x << 2);
 
    for (u32 cy = y; cy < yend; cy++, dest += __fb_pitch)
-      memset32(dest, color, w);
+      memset_var(dest, color, w, __fb_depth);
 }
 
 void tfb_draw_rect(int x, int y, int w, int h, u32 color)

@@ -10,6 +10,7 @@ extern int __fb_screen_w;
 extern int __fb_screen_h;
 extern size_t __fb_size;
 extern size_t __fb_pitch;
+extern size_t __fb_pitch_div2;
 extern size_t __fb_pitch_div4; /* see the comment in drawing.c */
 
 /* Window-related variables */
@@ -54,10 +55,12 @@ inline void tfb_draw_pixel(int x, int y, u32 color)
    switch (__fb_depth)
    {
       case 16:
+         if ((u32)x < (u32)__fb_win_end_x && (u32)y < (u32)__fb_win_end_y)
+            ((volatile u16 *)__fb_buffer)[x + y * __fb_pitch_div2] = (u16)color;
          break;
       case 32:
          if ((u32)x < (u32)__fb_win_end_x && (u32)y < (u32)__fb_win_end_y)
-         ((volatile u32 *)__fb_buffer)[x + y * __fb_pitch_div4] = color;
+            ((volatile u32 *)__fb_buffer)[x + y * __fb_pitch_div4] = color;
          break;
       default:
          break;

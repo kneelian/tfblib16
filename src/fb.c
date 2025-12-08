@@ -80,6 +80,7 @@ int tfb_acquire_fb(u32 flags, const char *fb_device, const char *tty_device)
 
    __fb_pitch = fb_fixinfo.line_length;
    __fb_size = __fb_pitch * __fbi.yres;
+   __fb_pitch_div2 = __fb_pitch >> 1;
    __fb_pitch_div4 = __fb_pitch >> 2;
 
    if ((__fbi.bits_per_pixel != 32)/* && (__fbi.bits_per_pixel != 16)*/) {
