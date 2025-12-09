@@ -205,10 +205,10 @@ void tfb_flush_rect(int x, int y, int w, int h)
    w = MIN(w, MAX(0, __fb_win_end_x - x));
    yend = MIN(y + h, __fb_win_end_y);
 
-   size_t offset = y * __fb_pitch + (x << 2);
+   size_t offset = y * __fb_pitch + (x << (__fb_depth >> 4));
    void *dest = __fb_real_buffer + offset;
    void *src = __fb_buffer + offset;
-   u32 rect_pitch = w << 2;
+   u32 rect_pitch = w << (__fb_depth >> 4);
 
    for (int cy = y; cy < yend; cy++, src += __fb_pitch, dest += __fb_pitch)
       memcpy(dest, src, rect_pitch);
