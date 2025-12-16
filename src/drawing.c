@@ -60,7 +60,7 @@ int tfb_set_center_window_size(u32 w, u32 h)
 void tfb_clear_screen(u32 color)
 {
    if (__fb_pitch == (u32) 4 * __fb_screen_w) {
-      memset_var(__fb_buffer, color, __fb_size >> 2, __fb_depth);
+      memset_N(__fb_buffer, color, __fb_size >> 2, __fb_depth);
       return;
    }
 
@@ -87,7 +87,8 @@ void tfb_draw_hline(int x, int y, int len, u32 color)
       return;
 
    len = MIN(len, MAX(0, (int)__fb_win_end_x - x));
-   memset_var(__fb_buffer + y * __fb_pitch + (x << (__fb_depth >> 4)), color, len, __fb_depth);
+   memset_N(__fb_buffer + y * __fb_pitch + (x << (__fb_depth >> 4)), 
+             color, len, __fb_depth);
 }
 
 void tfb_draw_vline(int x, int y, int len, u32 color)
@@ -107,16 +108,13 @@ void tfb_draw_vline(int x, int y, int len, u32 color)
 
    yend = MIN(y + len, __fb_win_end_y);
 
-   if(__fb_depth == 16)
-   {
+   if(__fb_depth == 16) {
       volatile u16 *buf =
          ((volatile u16 *) __fb_buffer) + y * __fb_pitch_div2 + x;
 
       for (; y < yend; y++, buf += __fb_pitch_div2)
          *buf = (u16)color;
-   }
-   else
-   {
+   } else {
       volatile u32 *buf =
          ((volatile u32 *) __fb_buffer) + y * __fb_pitch_div4 + x;
 
@@ -162,7 +160,7 @@ void tfb_fill_rect(int x, int y, int w, int h, u32 color)
    dest = __fb_buffer + y * __fb_pitch + (x << (__fb_depth >> 4));
 
    for (u32 cy = y; cy < yend; cy++, dest += __fb_pitch)
-      memset_var(dest, color, w, __fb_depth);
+      memset_N(dest, color, w, __fb_depth);
 }
 
 void tfb_draw_rect(int x, int y, int w, int h, u32 color)
