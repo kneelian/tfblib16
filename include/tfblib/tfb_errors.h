@@ -36,7 +36,7 @@
 /**
  * Unsupported video mode
  *
- * \note Currently the library supports only 32-bit color modes.
+ * \note Currently the library supports only 16-bit and 32-bit color modes.
  */
 #define TFB_ERR_UNSUPPORTED_VIDEO_MODE_DEPTH 7
 
