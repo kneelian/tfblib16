@@ -653,4 +653,5 @@ int tfb_flush_fb(void);
 
 /* undef the the convenience types defined above */
 #undef u8
+#undef u16
 #undef u32
